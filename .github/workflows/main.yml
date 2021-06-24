@@ -49,3 +49,22 @@ jobs:
           failOnStandardError: false
           # Used to pull Az module from Azure/az-ps-module-versions.  Since there's a default, this is typically not supplied by the user.
           githubToken: ${{ github.token }}
+          
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+            # Paste output of `az ad sp create-for-rbac` as value of secret variable: AZURE_CREDENTIALS
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+            # Set this value to true to enable Azure PowerShell Login in addition to Az CLI login
+          enable-AzPSSession: true
+            # Name of the environment. Supported values are azurecloud, azurestack, azureusgovernment, azurechinacloud, azuregermancloud. Default being azurecloud
+          environment: azurecloud
+            # Set this value to true to enable support for accessing tenants without subscriptions
+          allow-no-subscriptions: false
+
+      - name: Run Azure PowerShell script
+        uses: azure/powershell@v1
+        with:
+          inlineScript: |
+            Get-AzResource
+          azPSVersion: '3.1.0'
